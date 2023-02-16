@@ -1,6 +1,0 @@
-﻿cl : command line  warning D9035: option 'Gm' has been deprecated and will be removed in a future release
-  StdAfx.cpp
-cl : command line  warning D9035: option 'Gm' has been deprecated and will be removed in a future release
-  SimpleGLUT.cpp
-SimpleGLUT.obj : warning LNK4075: ignoring '/EDITANDCONTINUE' due to '/SAFESEH' specification
-  SimpleGLUT.vcxproj -> C:\Users\bambi\Desktop\School\CSCI 6554 - Computer Graphics II\SimpleGLUT\SimpleGLUT\Debug\SimpleGLUT.exe

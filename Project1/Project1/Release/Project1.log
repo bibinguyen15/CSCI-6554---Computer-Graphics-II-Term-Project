@@ -1,4 +1,7 @@
-﻿  Source.cpp
-C:\Users\bambi\Desktop\School\CSCI 6554 - Computer Graphics II\Term Project\Project1\Project1\Source.cpp(8,2): error C3861: 'readFile': identifier not found
-C:\Users\bambi\Desktop\School\CSCI 6554 - Computer Graphics II\Term Project\Project1\Project1\Source.cpp(14,22): error C2661: 'std::basic_istream<char,std::char_traits<char>>::getline': no overloaded function takes 0 arguments
-C:\Users\bambi\Desktop\School\CSCI 6554 - Computer Graphics II\Term Project\Project1\Project1\Source.cpp(14,22): message : while trying to match the argument list '()'
+﻿  Main.cpp
+  Source.cpp
+  Generating code
+  Previous IPDB not found, fall back to full compilation.
+  All 161 functions were compiled because no usable IPDB/IOBJ from previous compilation was found.
+  Finished generating code
+  Project1.vcxproj -> C:\Users\bambi\Desktop\Spring 2023\CSCI 6554 - Computer Graphics II\Project\Project1\Release\Project1.exe

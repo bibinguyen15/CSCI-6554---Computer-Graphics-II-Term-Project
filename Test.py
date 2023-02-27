@@ -1,35 +1,17 @@
 import OpenGL
-import OpenGL.GL
-import OpenGL.GLUT
+from OpenGL.GL import *
+from OpenGL.GLUT import *
+from OpenGL.GLU import *
+print("Imports successful!")
 
+def showScreen():
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT) # Remove everything from screen (i.e. displays all white)
 
-
-def readFile(fileName):
-    with open(fileName, 'r') as f: 
-        #split each line into a data index
-        data = f.readlines()
-        
-        #number  of vertices and number of polygons
-        nVer, nPol = int(data[0].split()[1]), int(data[0].split()[2])
-        
-        vertices, poly = [], []
-        
-        #processing the vertices
-        vertices =[]
-        for i in range(nVer):
-            print(i)
-            
-        
-        #processing the polygons
-        for i in range(nPol):
-            print(i)
-        
-        
-        
-       
-    
-    
-    
-readFile("house.d.txt")
-
-
+glutInit() # Initialize a glut instance which will allow us to customize our window
+glutInitDisplayMode(GLUT_RGBA) # Set the display mode to be colored
+glutInitWindowSize(500, 500)   # Set the width and height of your window
+glutInitWindowPosition(0, 0)   # Set the position at which this windows should appear
+wind = glutCreateWindow("OpenGL Coding Practice") # Give your window a title
+glutDisplayFunc(showScreen)  # Tell OpenGL to call the showScreen method continuously
+glutIdleFunc(showScreen)     # Draw any graphics or shapes in the showScreen function at all times
+glutMainLoop()  # Keeps the window created above displaying/running in a loop

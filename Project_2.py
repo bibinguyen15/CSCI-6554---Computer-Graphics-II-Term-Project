@@ -8,7 +8,13 @@ import numpy as np
 # cam = np.array([0,0,-20])
 # cam = np.array([-20, 0, -20])
 # cam = np.array([25, 35, -20])
-cam = np.array([30, -15, -30])
+# cam = np.array([30, -15, -30])
+
+
+# Shuttle camera angles
+cam = np.array([30, -15, 150])
+cam = np.array([30, 50, 150])
+# cam = np.array([0, 0, 200])
 
 
 # Function to read file into list of vertices and list of polygons
@@ -53,21 +59,22 @@ def getVertices(vertices, transform):
         # Divide by z before return to 3D
         vertex = (vertex / vertex[-1])[:-1]
         newVertices.append(vertex)
+
+    # print(newVertices)
     return newVertices
 
 
 # Main drawing function
-def drawFunc():
-    glClearColor(0.0, 0.0, 0.0, 0.0)
-    glClear(GL_COLOR_BUFFER_BIT)
+def transformation(file):
 
     # get vertices and polygons from file
-    vertices, polys = read_file("D files\\house.d.txt")
+    vertices, polys = read_file(file)
 
     # Defining pRef, varies depending on objects
     # pRef = np.array([-10, 0, 0])
     # pRef = np.array([10, 15, 20])
-    pRef = np.array([10, 0, 20])
+    #pRef = np.array([10, 0, 20])
+    pRef = np.array([0, 0, 0])
 
     # calculating U, V, N
     N = pRef - cam
@@ -95,7 +102,7 @@ def drawFunc():
     mView = R.dot(T)
 
     # defining d, f, h
-    d, f = 1, 100
+    d, f = 1, 1000
     h = d / 2
 
     # mPers matrix
@@ -116,10 +123,21 @@ def drawFunc():
     # call getVertices for transformed vertices
     vertices = getVertices(vertices, transform)
 
-    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE)
-
     # since glVertex3f does not need the number of verticesm we can simplify
     polys = [poly[1:] for poly in polys]
+
+    # print(vertices)
+    return polys, vertices
+
+
+def drawFunc():
+    glClearColor(0.0, 0.0, 0.0, 0.0)
+    glClear(GL_COLOR_BUFFER_BIT)
+
+    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE)
+
+    polys, vertices = transformation(
+        "D files\\shuttle.d.txt")
 
     # Draw each polygon
     for poly in polys:
@@ -145,7 +163,7 @@ def main():
     glutInitDisplayMode(GLUT_SINGLE | GLUT_RGBA)
     glutInitWindowPosition(0, 0)
     glutInitWindowSize(1000, 900)
-    glutCreateWindow('Lab 1: Viewing Transformation')
+    glutCreateWindow('Lab 2: Scan Conversion and Z Buffer')
 
     glutDisplayFunc(drawFunc)
     glutMainLoop()

@@ -2,18 +2,20 @@ from OpenGL.GL import *
 from OpenGL.GLU import *
 from OpenGL.GLUT import *
 import numpy as np
+from Classes import *
+from constants import *
 
 
 # Different camera views
-# cam = np.array([0,0,-20])
-# cam = np.array([-20, 0, -20])
-# cam = np.array([25, 35, -20])
-# cam = np.array([30, -15, -30])
+# cam = np.array([0, 0, -20])  # cow
+#cam = np.array([-20, 0, -20])
+cam = np.array([25, 35, -20])
+# cam = np.array([30, -15, -30])  # house
 
 
 # Shuttle camera angles
-cam = np.array([30, -15, 150])
-cam = np.array([30, 50, 150])
+#cam = np.array([30, -15, 150])
+#cam = np.array([30, 50, 150])
 # cam = np.array([0, 0, 200])
 
 
@@ -72,9 +74,9 @@ def transformation(file):
 
     # Defining pRef, varies depending on objects
     # pRef = np.array([-10, 0, 0])
-    # pRef = np.array([10, 15, 20])
-    #pRef = np.array([10, 0, 20])
-    pRef = np.array([0, 0, 0])
+    # pRef = np.array([10, 15, 20])  # house from top
+    pRef = np.array([10, 0, 20])  # house
+    # pRef = np.array([0, 0, 0])  # cow
 
     # calculating U, V, N
     N = pRef - cam
@@ -126,35 +128,55 @@ def transformation(file):
     # since glVertex3f does not need the number of verticesm we can simplify
     polys = [poly[1:] for poly in polys]
 
-    # print(vertices)
-    return polys, vertices
-
-
-def drawFunc():
-    glClearColor(0.0, 0.0, 0.0, 0.0)
-    glClear(GL_COLOR_BUFFER_BIT)
-
-    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE)
-
-    polys, vertices = transformation(
-        "D files\\shuttle.d.txt")
-
-    # Draw each polygon
+    # Back face culling to minimize
+    newPolys = []
     for poly in polys:
         # calculating normal for backface culling
         v1 = vertices[poly[1]] - vertices[poly[0]]
         v2 = vertices[poly[2]] - vertices[poly[1]]
         normal = np.cross(v1, v2)
 
-        # only proceed to draw if not back facing
+        # only proceed to add to list of polygons if not back-facing
         if normal[2] <= 0:
-            glBegin(GL_POLYGON)
-            for vertex in poly:
-                glVertex3f(vertices[vertex][0],
-                           vertices[vertex][1], vertices[vertex][2])
+            newPolys.append(poly)
 
-            glEnd()
+    # print(vertices)
+    return newPolys, vertices
 
+
+def drawFunc():
+    '''
+    Z buffer algorithm is also implemented here
+    '''
+    # openGL things
+    glClearColor(0.0, 0.0, 0.0, 0.0)
+    glClear(GL_COLOR_BUFFER_BIT)
+
+    # initialize each objects
+    camaro = Object("camaro")
+    house = Object("house")
+    cow = Object("cow")
+    #bench = Object("bench")
+
+    # initialize the image buffer and depth buffer
+    image = np.zeros((1000, 1000, 3))
+    depth = np.ones((1000, 1000))
+
+    # Calling scan conversion for each object
+    #house.scanConversion(image, depth)
+    cow.scanConversion(image, depth)
+    #bench.scanConversion(image, depth)
+    camaro.scanConversion(image, depth)
+
+    # Drawing the objects
+    glBegin(GL_POINTS)
+    for i in range(1000):
+        for j in range(1000):
+            if depth[i][j] != 1:
+                glColor3f(image[i][j][0], image[i][j][1], image[i][j][2])
+                glVertex2f(changeBack(i), changeBack(j))
+    glEnd()
+    glFinish()
     glFlush()
 
 
@@ -162,7 +184,7 @@ def main():
     glutInit()
     glutInitDisplayMode(GLUT_SINGLE | GLUT_RGBA)
     glutInitWindowPosition(0, 0)
-    glutInitWindowSize(1000, 900)
+    glutInitWindowSize(1000, 1000)
     glutCreateWindow('Lab 2: Scan Conversion and Z Buffer')
 
     glutDisplayFunc(drawFunc)

@@ -6,19 +6,6 @@ from Classes import *
 from constants import *
 
 
-# Different camera views
-# cam = np.array([0, 0, -20])  # cow
-cam = np.array([-20, 0, -20])
-#cam = np.array([25, 35, -20])
-# cam = np.array([30, -15, -30])  # house
-
-
-# Shuttle camera angles
-#cam = np.array([30, -15, 150])
-#cam = np.array([30, 50, 150])
-# cam = np.array([0, 0, 200])
-
-
 # Function to read file into list of vertices and list of polygons
 def read_file(file):
     with open(file, 'r') as f:
@@ -67,16 +54,10 @@ def getVertices(vertices, transform):
 
 
 # Main drawing function
-def transformation(file):
+def transformation(file, cam, pRef):
 
     # get vertices and polygons from file
     vertices, polys = read_file(file)
-
-    # Defining pRef, varies depending on objects
-    # pRef = np.array([-10, 0, 0])
-    # pRef = np.array([10, 15, 20])  # house from top
-    pRef = np.array([10, 0, 20])  # house
-    # pRef = np.array([0, 0, 0])  # cow
 
     # calculating U, V, N
     N = pRef - cam
@@ -153,10 +134,11 @@ def drawFunc():
     glClear(GL_COLOR_BUFFER_BIT)
 
     # initialize each objects
-    camaro = Object("camaro")
-    house = Object("house")
-    cow = Object("cow")
-    #bench = Object("bench")
+    #camaro = Object("camaro", cam, camaro_pRef)
+    #house = Object("house", cam, house_pRef)
+    #cow = Object("cow", cam, cow_pRef)
+    bench = Object("bench", cam, bench_pRef)
+    car = Object('car', cam, car_pRef)
 
     # initialize the image buffer and depth buffer
     image = np.zeros((1000, 1000, 3))
@@ -164,20 +146,21 @@ def drawFunc():
 
     # Calling scan conversion for each object
     #house.scanConversion(image, depth)
-    cow.scanConversion(image, depth)
-    #bench.scanConversion(image, depth)
-    camaro.scanConversion(image, depth)
+    #cow.scanConversion(image, depth)
+    #camaro.scanConversion(image, depth)
+    bench.scanConversion(image, depth)
+    car.scanConversion(image, depth)
 
-    '''
-    Note to self: try np.where for non_zero to potentially increase efficiency
-    '''
+    zbuffer = np.argwhere(depth != 1)
+
     # Drawing the objects
     glBegin(GL_POINTS)
-    for i in range(1000):
-        for j in range(1000):
-            if depth[i][j] != 1:
-                glColor3f(image[i][j][0], image[i][j][1], image[i][j][2])
-                glVertex2f(changeBack(i), changeBack(j))
+
+    for pos in zbuffer:
+        x, y = pos
+        glColor3f(image[x][y][0], image[x][y][1], image[x][y][2])
+        glVertex2f(changeBack(x), changeBack(y))
+
     glEnd()
     glFinish()
     glFlush()

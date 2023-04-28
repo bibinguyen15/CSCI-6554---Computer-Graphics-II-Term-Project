@@ -43,16 +43,15 @@ class Polygon:
         print("Color:", self.color)
         print("Edge table:", self.edges,
               "with a range from", self.ymin, "to", self.ymax)
-        print("Pixel list:", self.pixelList)
 
     def sortEdges(self):
         self.edges.sort(key=lambda x: x.ymin)
 
 
 class Object:
-    def __init__(self, file):
+    def __init__(self, file, cam, pRef):
         fileName = "D files\\" + file + ".d.txt"
-        self.rawPolys, self.rawVertices = transformation(fileName)
+        self.rawPolys, self.rawVertices = transformation(fileName, cam, pRef)
         self.polygons = []
         self.vertices = []
         self.processVertices()
@@ -75,8 +74,7 @@ class Object:
         print("There are", len(self.rawPolys), "polygons")
 
         for poly in self.rawPolys:
-            print("_________________________________________\n", poly)
-
+            #print("_________________________________________\n", poly)
             p_yMin = float('inf')
             p_yMax = float('-inf')
 
@@ -87,11 +85,12 @@ class Object:
                 edge = (poly[i], poly[i - 1])
 
                 e = Edge(edge)
-                print("Edge info:", edge)
+
                 # Each edge = poly[i] and poly[i+1]
                 v1 = self.vertices[edge[0]]
                 v2 = self.vertices[edge[1]]
-                print(edge[0], "=", v1, ",", edge[1], "=", v2)
+                #print(edge[0], "=", v1, ",", edge[1], "=", v2)
+
                 # Setting edge info
                 e.slope = (v2[0] - v1[0]) / (v2[1] - v1[1])
                 e.zySlope = (v2[2] - v1[2]) / (v2[1] - v1[1])
@@ -100,18 +99,11 @@ class Object:
                 e.xmin = v1[0] if v1[1] < v2[1] else v2[0]
                 e.zmin = v1[2] if v1[1] < v2[1] else v2[2]
 
-                '''
-                Note to self: make sure to change so that p_ymax and p_min is only calculated when the edge is added
-                '''
-
                 # Handling ymax and ymin of the polygon
                 if e.ymax > p_yMax:
                     p_yMax = e.ymax
                 if e.ymin < p_yMin:
                     p_yMin = e.ymin
-
-                e.print()
-                # p.edges.append(e)
 
                 if e.ymax != e.ymin:
                     p.edges.append(e)  # non horizontal edges only
@@ -130,22 +122,15 @@ class Object:
             print("Printing AET table:")
             for e in AET:
                 print("Edge:", e.name, "x=", e.xmin)
-        over = False
 
         for p in self.polygons:
-            # if True:
-            print("\nIn scan conversion for:", p.vertices)
-
-            p.print()
+            #p.print()
             AET = []
             yScan = p.ymin
+            flag = True
 
-            p.printEdgeX()
-            '''
-            Note to self: change to while loop and use a flag to check xmin
-            '''
-            for yScan in range(p.ymin, p.ymax + 1):
-                print("yScan=", yScan)
+            while yScan < p.ymax and flag:
+                #print("yScan=", yScan)
                 for e in p.edges:
                     if e.ymin == yScan:
                         AET.append(e)
@@ -154,7 +139,7 @@ class Object:
 
                 AET.sort(key=lambda k: k.xmin)
 
-                printAET(AET)
+                #printAET(AET)
 
                 for i in range(len(AET) // 2):
 
@@ -166,10 +151,6 @@ class Object:
                             (end.xmin - start.xmin)
                     else:
                         zx = 0
-
-                    print("Start:", start.name, "x:", start.xmin)
-                    print("End:", AET[i * 2 + 1].name,
-                          "x:", AET[i * 2 + 1].xmin)
 
                     for x in range(int(start.xmin), int(end.xmin)):
                         if changeBack(z, 1) < depth[x][yScan]:
@@ -184,20 +165,11 @@ class Object:
                     if edge.ymax == yScan:
                         AET.remove(edge)
                     else:
-                        print("Edge slope:", edge.name, edge.slope)
-
+                        #print("Edge slope:", edge.name, edge.slope)
                         edge.xmin += edge.slope
                         if edge.xmin >= 1000:
-
-                            print(edge.name)
-                            print(edge.name[0], "=", self.vertices[edge.name[0]],
-                                  "-", edge.name[1], "=", self.vertices[edge.name[1]])
-                            over = True
+                            flag = False
                         edge.zmin += edge.zySlope
-                if over:
-                    break
-
-            print(p.edges)
 
         return
 
@@ -210,47 +182,3 @@ def changeBack(value, coordinate=0):
         result = value / 1000
     return result
 
-
-'''
-'''
-
-# glClearColor(0.0, 0.0, 0.0, 0.0)
-# glClear(GL_COLOR_BUFFER_BIT)
-
-# house = Object("house")
-# print("Here")
-# image = np.zeros((1000, 1000, 3))
-# depth = np.ones((1000, 1000))
-
-# house.scanConversion(image, depth)
-
-# coordinates = np.where(depth < 1)
-
-
-# glBegin(GL_POINTS)
-# for i in range(1000):
-# for j in range(1000):
-# if image[i][j]
-# print(depth[i][j])
-# glEnd()
-# glFlush()
-
-# for x in coordinates:
-# if i == 3:
-# break
-
-# print(x)
-# print(depth[x[0]][x[1]])
-# i += 1
-
-'''
-test = np.ones((3, 2))
-
-for i in range(2):
-    test[i][1] = 0
-
-pos = np.where(test < 1)
-
-for x in pos:
-    print(x[0], ",", x[1])
-'''

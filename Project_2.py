@@ -8,8 +8,8 @@ from constants import *
 
 # Different camera views
 # cam = np.array([0, 0, -20])  # cow
-#cam = np.array([-20, 0, -20])
-cam = np.array([25, 35, -20])
+cam = np.array([-20, 0, -20])
+#cam = np.array([25, 35, -20])
 # cam = np.array([30, -15, -30])  # house
 
 
@@ -168,6 +168,9 @@ def drawFunc():
     #bench.scanConversion(image, depth)
     camaro.scanConversion(image, depth)
 
+    '''
+    Note to self: try np.where for non_zero to potentially increase efficiency
+    '''
     # Drawing the objects
     glBegin(GL_POINTS)
     for i in range(1000):

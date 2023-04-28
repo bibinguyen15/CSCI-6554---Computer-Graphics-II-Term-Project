@@ -13,8 +13,6 @@ class Edge:
         self.slope = 0  # x over y
         self.zySlope = 0  # z over y
 
-        # self.xintersect = 0
-
     def print(self):
         print("Edge:", self.name, "-- Slope=", self.slope)
         print("Y_max=", self.ymax, "- Y_min=",
@@ -28,10 +26,6 @@ class Polygon:
         self.ymin = 0
         self.ymax = 0
         self.edges = []
-
-        # all pixels inside this polygon (including vertex)
-        self.pixelList = []
-        self.screenPixel = []
 
     def printEdgeX(self):
         print("Xmin of all edges in polygon:", self.vertices)
@@ -59,10 +53,8 @@ class Object:
     def __init__(self, file):
         fileName = "D files\\" + file + ".d.txt"
         self.rawPolys, self.rawVertices = transformation(fileName)
-
         self.polygons = []
         self.vertices = []
-
         self.processVertices()
         self.setEdges()  # immediately updates polygons
 
@@ -108,8 +100,9 @@ class Object:
                 e.xmin = v1[0] if v1[1] < v2[1] else v2[0]
                 e.zmin = v1[2] if v1[1] < v2[1] else v2[2]
 
-                # Handling vertex-scanline intersection
-                # e.ymax -= 1
+                '''
+                Note to self: make sure to change so that p_ymax and p_min is only calculated when the edge is added
+                '''
 
                 # Handling ymax and ymin of the polygon
                 if e.ymax > p_yMax:
@@ -138,7 +131,7 @@ class Object:
             for e in AET:
                 print("Edge:", e.name, "x=", e.xmin)
         over = False
-        # p = self.polygons[0]
+
         for p in self.polygons:
             # if True:
             print("\nIn scan conversion for:", p.vertices)
@@ -148,7 +141,9 @@ class Object:
             yScan = p.ymin
 
             p.printEdgeX()
-
+            '''
+            Note to self: change to while loop and use a flag to check xmin
+            '''
             for yScan in range(p.ymin, p.ymax + 1):
                 print("yScan=", yScan)
                 for e in p.edges:

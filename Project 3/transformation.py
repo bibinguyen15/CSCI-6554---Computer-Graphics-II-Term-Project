@@ -1,8 +1,4 @@
-from OpenGL.GL import *
-from OpenGL.GLU import *
-from OpenGL.GLUT import *
 import numpy as np
-from Classes import *
 from constants import *
 
 
@@ -35,11 +31,14 @@ def read_file(file):
 
 # Function to return a unit vector of a vector
 def unitVector(vector):
-    mag = np.sqrt(np.sum([i**2 for i in vector]))
-    return vector / mag
+    if np.linalg.norm(vector):
 
+        return (vector / np.linalg.norm(vector))
+    return vector
 
 # Function that applies the transformation on each vertex
+
+
 def getVertices(vertices, transform):
     newVertices = []
     for vertex in vertices:
@@ -109,75 +108,23 @@ def transformation(file, cam, pRef):
     # since glVertex3f does not need the number of verticesm we can simplify
     polys = [poly[1:] for poly in polys]
 
-    # Back face culling to minimize
-    newPolys = []
-    polyNormal = []
+    polyNormals = []
     for poly in polys:
         # calculating normal for backface culling
         v1 = vertices[poly[1]] - vertices[poly[0]]
         v2 = vertices[poly[2]] - vertices[poly[1]]
         normal = np.cross(v1, v2)
 
-        # only proceed to add to list of polygons if not back-facing
-        if normal[2] <= 0:
-            newPolys.append(poly)
-            polyNormal.append(normal)
+        polyNormals.append(unitVector(normal))
 
-    # print(vertices)
-    return newPolys, vertices, polyNormal
+    return polys, vertices, polyNormals
 
 
-def drawFunc():
-    '''
-    Z buffer algorithm is also implemented here
-    '''
-    # openGL things
-    glClearColor(0.0, 0.0, 0.0, 0.0)
-    glClear(GL_COLOR_BUFFER_BIT)
-
-    # initialize each objects
-    #camaro = Object("camaro", cam, camaro_pRef)
-    #house = Object("house", cam, house_pRef)
-    #cow = Object("cow", cam, cow_pRef)
-    bench = Object("bench", cam, bench_pRef)
-    car = Object('car', cam, car_pRef)
-
-    # initialize the image buffer and depth buffer
-    image = np.zeros((1000, 1000, 3))
-    depth = np.ones((1000, 1000))
-
-    # Calling scan conversion for each object
-    #house.scanConversion(image, depth)
-    #cow.scanConversion(image, depth)
-    #camaro.scanConversion(image, depth)
-    bench.scanConversion(image, depth)
-    car.scanConversion(image, depth)
-
-    zbuffer = np.argwhere(depth != 1)
-
-    # Drawing the objects
-    glBegin(GL_POINTS)
-
-    for pos in zbuffer:
-        x, y = pos
-        glColor3f(image[x][y][0], image[x][y][1], image[x][y][2])
-        glVertex2f(changeBack(x), changeBack(y))
-
-    glEnd()
-    glFinish()
-    glFlush()
-
-
-def main():
-    glutInit()
-    glutInitDisplayMode(GLUT_SINGLE | GLUT_RGBA)
-    glutInitWindowPosition(0, 0)
-    glutInitWindowSize(1000, 1000)
-    glutCreateWindow('Lab 2: Scan Conversion and Z Buffer')
-
-    glutDisplayFunc(drawFunc)
-    glutMainLoop()
-
-
-if __name__ == '__main__':
-    main()
+#Function to change the values back into float instead of by screensize
+def changeBack(value, coordinate=0):
+    # 0 if value is x or y
+    if coordinate == 0:
+        result = value / 1000 * 2 - 1
+    else:
+        result = value / 1000
+    return result

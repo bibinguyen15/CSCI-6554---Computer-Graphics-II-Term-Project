@@ -12,7 +12,7 @@ def main():
     glutInitDisplayMode(GLUT_SINGLE | GLUT_RGBA)
     glutInitWindowPosition(0, 0)
     glutInitWindowSize(1000, 1000)
-    glutCreateWindow('Lab 3: Shading and Illumination Models')
+    glutCreateWindow('Lab 4: Texture Mapping')
 
     glutDisplayFunc(drawFunc)
     glutMainLoop()

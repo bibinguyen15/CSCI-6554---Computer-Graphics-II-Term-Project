@@ -13,13 +13,11 @@ class Illumination:
 
         self.L = unitVector(L)
         self.V = unitVector(V)
-        #self.L = L
-        #self.V = V
         self.h = L + V
         self.h = unitVector(self.h)
 
     def phongIllumination(self, normal, n):
-        #print(normal)
+        # print(normal)
 
         ambient, diffuse, specular = np.zeros(3), np.zeros(3), np.zeros(3)
         intensity = np.zeros(3)

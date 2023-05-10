@@ -32,8 +32,7 @@ def read_file(file):
 # Function to return a unit vector of a vector
 def unitVector(vector):
     if np.linalg.norm(vector):
-
-        return (vector / np.linalg.norm(vector))
+        return vector / np.linalg.norm(vector)
     return vector
 
 # Function that applies the transformation on each vertex

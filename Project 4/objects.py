@@ -4,7 +4,7 @@ from transformation import *
 from illumination import *
 from classes import *
 import constants
-
+from texture import *
 
 class Object:
     def __init__(self, file, V, pRef, i, mode=-1):
@@ -14,7 +14,7 @@ class Object:
         # print("These are the polygons showing:", self.rawPolys)
         self.polygons = []
         self.vertices = []
-        self.texture = []
+        self.texture = loadTexture(constants.textureFile)
 
         # illumination model object
         self.i = i
@@ -52,7 +52,7 @@ class Object:
             # print(normal)
             normal = unitVector(normal)
             v.normal = normal
-            v.color *= self.i.phongIllumination(v.normal, constants.n)
+            v.color = self.i.phongIllumination(self.texture, v.normal, constants.n)
             # print(
             # f"\nVertex {v.number} normal ={normal}\nVertex color={v.color}")
 
@@ -317,10 +317,8 @@ class Object:
 
                         if changeBack(z, 1) < depth[x][yScan]:
                             depth[x][yScan] = changeBack(z, 1)
-
-                            color = constants.color * self.i.phongIllumination(
-                                np, constants.n)
-
+                            # u, v = textureMap(self.texture[0], self.texture[1],[x, yScan, z])
+                            color = self.i.phongIllumination(self.texture, np, constants.n)
                             image[x][yScan] = color
 
                         z += zx
@@ -344,8 +342,7 @@ class Object:
         if self.mode == -1:
             print(f'In constant shading mode.')
             for p in self.polygons:
-                p.color *= self.i.phongIllumination(p.normal, constants.n)
-                # print(p.vertices, p.normal, p.color)
+                p.color = self.i.phongIllumination(self.texture, p.normal, constants.n)
             self.scanConversionConstant(image, depth)
         # Gouraud shading
         elif self.mode == 0:

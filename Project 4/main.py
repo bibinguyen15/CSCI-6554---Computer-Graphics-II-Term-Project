@@ -30,8 +30,8 @@ def drawFunc():
 
     # initialize each objects
     #house = Object('house', house_cam, house_pRef, illumination, mode=mode)
-    #cow = Object("cow", cow_cam, cow_pRef, illumination, mode)
-    #donut = Object('donut', cam, pRef, illumination, mode)
+    # cow = Object("cow", cow_cam, cow_pRef, illumination, mode)
+    # donut = Object('donut', cam, pRef, illumination, mode)
     betterBall = Object('better-ball', cam, pRef, illumination, mode)
 
     # initialize the image buffer and depth buffer
@@ -40,8 +40,8 @@ def drawFunc():
 
     # Calling scan conversion for each object
     #house.color(image, depth)
-    #cow.color(image, depth)
-    #donut.color(image, depth)
+    # cow.color(image, depth)
+    # donut.color(image, depth)
     betterBall.color(image, depth)
 
     zbuffer = np.argwhere(depth != 1)
